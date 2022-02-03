@@ -128,12 +128,13 @@ function GenerarGeneros(){
 		"tarrak",
 		"homeboy",
 		"clod",
-		":burrito:"
+		":burrito:",
+		"juan"
 	];
 	
 	const pron=prons[Math.floor(Math.random()*prons.length)];
 	
-	return pron+"/"+pron+"s";
+	return pron+"/"+pron+"s/"+pron+"self";
 }
 
 
