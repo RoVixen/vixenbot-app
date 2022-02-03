@@ -121,7 +121,6 @@ function GenerarGeneros(){
 		"ella",
 		"elle",
 		"they",
-		"zax",
 		"hoe",
 		"elicoptero",
 		"pedo",
