@@ -23,7 +23,8 @@ const commands = [
 	}
 ]; 
 
-const rest = new REST({ version: '9' }).setToken('OTA4OTMyMTU5NTg5NDY2MTQy.YY87CQ.ltsWGPDhpdKQA714_396ju3hKqU');
+const config = require("./config.json");
+const rest = new REST({ version: '9' }).setToken(config.token);
 
 (async () => {
   try {
