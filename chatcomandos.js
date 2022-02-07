@@ -1,5 +1,6 @@
 const {TresEnLineaHandler} = require("./tresenlinea.js");
 const {Ajedrez} = require("./ajedrez.js");
+const DnDApiResolve = require("./dndapi.js");
 
 function TrimUserIdFromMention(mention){
 	if (!mention) return;
@@ -152,20 +153,14 @@ module.exports={
 				);
 			}
 		},
-		mesopt:{
-			desc:"mensaje de experimentacion, probando mandar mensajes con opciones",
+		dnd:{
+			desc:"Busca informacion sobre algun elemento de dnd 5e en la api \"www.dnd5eapi.co\", pero solo del player handbook (ojo, pero todo en ingles), para mas informacion, escribe \"{{dnd\" o \"{{dnd help\"",
 			f:(params,message)=>{
-				message.channel.send({
-					content:"checnado el nonce de este mensaje",
-					nonce:"el nonce equisde"
-				}).then(m=>console.log(m.nonce));
-				/*
-				files: [{
-						attachment: 'file.jpg',
-						name: 'file.jpg',
-						description: 'A description of the file'
-					}],
-				*/
+				if(params.length==0)
+					params[0]="help";
+				
+				console.log(params)
+				DnDApiResolve(params,message);
 			}
 		}
 	}
