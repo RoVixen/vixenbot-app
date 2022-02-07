@@ -18,7 +18,16 @@ function CapitalizeAll(toCap){
     return toCap.split("_").map((entry)=>{
         return entry[0].toUpperCase()+entry.slice(1);
     }).join(" ");
+
 }
+function insertKeyAfterKey(key,value,obj,toAfter){
+    return Object.keys(obj).reduce((ac,a,i) => {
+        ac[a] = obj[a]; 
+        if(a === toAfter) ac[key] = value;
+        return ac;
+    },{})
+  }
+  
 
 function BuildFields(result){
 
@@ -36,17 +45,27 @@ function BuildFields(result){
 
             if(typeof result[entry] == "object"){
                 if(result[entry].constructor.name=="Array"){
+                    
+                    let toAdd=(prev,txt)=>{
+                        if((prev+txt).length>=1024){
+                            fields.push({
+                                name,
+                                value:prev
+                            });
+                            return txt;
+                        }
+                        return prev+txt;
+                    }
 
                     result[entry]=result[entry].reduce((prev, current) => {
                         //to do: configure name desc for monsters actions and stuff
                         if(typeof current == "object"){
                             if(current.name && current.desc)
-                                return prev+" "+current.name+".\n   "+current.desc+"\n\n";
+                                return toAdd(prev," "+current.name+".\n   "+current.desc+"\n\n");
                             else if(current.name)
-                                return prev+" "+current.name;
+                                return toAdd(prev," "+current.name);
                         }
-                        return prev+current;
-                    
+                        return toAdd(prev,current);
                     },"");
                 }else{
                     result[entry]=result[entry].name;
@@ -195,6 +214,10 @@ const comandos={
                       truesight
                     }
                     languages
+                    special_abilities{
+                      name
+                      desc
+                    }
                     actions{
                         name
                         desc 
@@ -202,10 +225,6 @@ const comandos={
                     reactions{
                         name
                         desc 
-                    }
-                    special_abilities{
-                      name
-                      desc
                     }
                 }
             }`).then((result)=>{
@@ -246,15 +265,20 @@ const comandos={
                 }
                 result.senses=sensesText.join(" ");
                 
+                let GetMod=(num)=>{
+                    const mod=Math.floor(num/2)-5;
+                    return (mod>=0&&"+")+mod;
+                }
+
                 //stats
-                result.stats=`
-                    Str: ${result.strength}
-                    Dex: ${result.dexterity}
-                    Con: ${result.constitution}
-                    Int: ${result.intelligence}
-                    Wis: ${result.wisdom}
-                    Cha: ${result.charisma}
-                `;
+                result=insertKeyAfterKey("stats",`
+                    Str: ${result.strength} (${GetMod(result.strength)})
+                    Dex: ${result.dexterity} (${GetMod(result.dexterity)})
+                    Con: ${result.constitution} (${GetMod(result.constitution)})
+                    Int: ${result.intelligence} (${GetMod(result.intelligence)})
+                    Wis: ${result.wisdom} (${GetMod(result.wisdom)})
+                    Cha: ${result.charisma} (${GetMod(result.charisma)})
+                `,result,"speed");
                 delete result.strength;
                 delete result.dexterity;
                 delete result.constitution;
