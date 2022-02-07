@@ -36,11 +36,17 @@ function BuildFields(result){
 
             if(typeof result[entry] == "object"){
                 if(result[entry].constructor.name=="Array"){
+
                     result[entry]=result[entry].reduce((prev, current) => {
-                        return prev+=" "+(typeof current == "object"?
-                            current.name:
-                            current
-                        );
+                        //to do: configure name desc for monsters actions and stuff
+                        if(typeof current == "object"){
+                            if(current.name && current.desc)
+                                return prev+" "+current.name+".\n   "+current.desc+"\n\n";
+                            else if(current.name)
+                                return prev+" "+current.name;
+                        }
+                        return prev+current;
+                    
                     },"");
                 }else{
                     result[entry]=result[entry].name;
@@ -157,6 +163,7 @@ const comandos={
                     xp
                     armor_class
                     hit_points
+                    hit_dice
                     speed{
                       walk
                       fly
@@ -177,6 +184,29 @@ const comandos={
                       }
                       value
                     }
+                    condition_immunities{
+                      name
+                    }
+                    senses{
+                      passive_perception
+                      darkvision
+                      blindsight
+                      tremorsense
+                      truesight
+                    }
+                    languages
+                    actions{
+                        name
+                        desc 
+                    }
+                    reactions{
+                        name
+                        desc 
+                    }
+                    special_abilities{
+                      name
+                      desc
+                    }
                 }
             }`).then((result)=>{
                 if(!result.monster){
@@ -196,6 +226,10 @@ const comandos={
                 result.challenge_rating=`${result.challenge_rating} (${result.xp} XP)`;
                 delete result.xp;
 
+                //hit_points and formula
+                result.hit_points=`${result.hit_points} (${result.hit_dice})`;
+                delete result.hit_dice;
+
                 //speed
                 let speedText=[];
                 for(const speedName in result.speed){
@@ -203,6 +237,14 @@ const comandos={
                         speedText.push(`${CapitalizeAll(speedName)}: ${result.speed[speedName]}`);
                 }
                 result.speed=speedText.join(" ");
+                
+                //senses (should not go here, but the code is too similar)
+                let sensesText=[];
+                for(const senseName in result.senses){
+                    if(result.senses[senseName])
+                        sensesText.push(`${CapitalizeAll(senseName)}: ${result.senses[senseName]}`);
+                }
+                result.senses=sensesText.join(" ");
                 
                 //stats
                 result.stats=`
@@ -226,8 +268,14 @@ const comandos={
                        return prev+current.proficiency.name.slice(6)+": +"+current.value+"\n";
                     },"")
                 }
-
-                //
+                
+                /*//special habilites, actions and reactions
+                let setsOfActionsAndStuff=(obj)=>{
+                    obj.forEach((pair) => {
+                        pair
+                    });
+                }
+                */
 
                 resolve(MakeDnDEmbed({
                     categoria:"Monster",
